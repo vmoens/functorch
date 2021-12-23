@@ -1,2 +1,2 @@
 # PyTorch forward-mode is not mature yet
-from .._src.eager_transforms import jvp, jacfwd, hessian
+from .._src.eager_transforms import jvp, jacfwd, hessian, functionalize
