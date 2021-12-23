@@ -2414,8 +2414,8 @@ class TestExamplesCorrectness(TestCase):
 
         self.assertEqual(result_grads, expected_grads, atol=1e-3, rtol=1.)
 
-class TestFunctionalize(TestCase):
 
+class TestFunctionalize(TestCase):
     def _check_functionalize_correctness(self, f: Callable, inpt: torch.Tensor) -> None:
         inpt1 = inpt.clone()
         inpt2 = inpt.clone()
