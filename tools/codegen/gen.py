@@ -29,7 +29,7 @@ from tools.codegen.api.translate import translate
 from tools.codegen.utils import (
     Target, concatMap, context, mapMaybe, YamlDumper, YamlLoader, FileManager, assert_never
 )
-from tools.codegen.gen_vmap_plumbing import gen_all_vmap_plumbing
+from tools.codegen.gen_vmap_plumbing2 import gen_all_vmap_plumbing
 
 T = TypeVar('T')
 
