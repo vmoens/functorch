@@ -2633,22 +2633,6 @@ class TestVmapOperators(Namespace.TestVmapBase):
              (torch.rand(B1, B2, B0, 3, 2, 5), torch.rand(B0, 3 * 2 * 5)),
              in_dims=(2, 0))
 
-    def test_no_random_op_support(self):
-        B0 = 2
-
-        captured = torch.rand(3)
-
-        random_ops = [
-            (lambda t: torch.randint_like(t, 2), (torch.rand(B0, 1),)),
-            (lambda t: torch.randint_like(t, 0, 2), (torch.rand(B0, 1),)),
-            (lambda t: torch.randint_like(captured, 2), (torch.rand(B0),)),
-            (lambda t: torch.randint_like(captured, 0, 2), (torch.rand(B0),)),
-        ]
-        for op, args in random_ops:
-            with self.assertRaisesRegex(RuntimeError,
-                                        'vmap: We do not yet support calling random operations'):
-                vmap(op)(*args)
-
     def test_conv2d(self):
         conv_setups = [
             (torch.nn.Conv1d, torch.conv1d, [2, 4, 15]),
@@ -3225,8 +3209,6 @@ class TestVmapOperatorsOpInfo(TestCase):
         xfail('bool', 'channels_last'),
         xfail('linalg.cross'),
         xfail('long', 'channels_last'),
-        xfail('rand_like'),
-        xfail('randint_like'),
         xfail('searchsorted'),
         xfail('short', 'channels_last'),
         xfail('unique_consecutive'),
@@ -3568,12 +3550,14 @@ class TestVmapOperatorsOpInfo(TestCase):
 
     @parametrize('randomness', ['error', 'same', 'different'])
     @parametrize('batched_input', [True, False])
-    def test_feature_dropout(self, device, randomness, batched_input):
+    def test_random_ops_with_batch_dim(self, device, randomness, batched_input):
         # special case because functional feature dropout expects a batch dimension, so it doesn't match the
         # pattern for other randomness
 
         seed = 1234567
         supported_ops = [
+            lambda t, _: torch.randint_like(t, 20),
+            lambda t, _: torch.randint_like(t, 0, 20),
             lambda t, _: torch.nn.functional.dropout(torch.ones_like(t), training=True),
             lambda t, _: torch.nn.functional.alpha_dropout(torch.ones_like(t), training=True),
             lambda t, _: torch.nn.functional.feature_alpha_dropout(t, training=True),
