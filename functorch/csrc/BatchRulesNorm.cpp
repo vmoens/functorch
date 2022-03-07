@@ -60,7 +60,11 @@ batch_norm_batch_rule(
   auto running_var = *running_var_maybe_owned;
 
   if (input_bdim && ((running_mean.defined() && !running_mean_bdim) || (running_var.defined() && !running_var_bdim))) {
-    throw std::runtime_error("Batch norm got a batched tensor as input while the running_mean or running_var, which will be updated in place, were not batched.");
+    throw TORCH_CHECK(false,
+                      "Batch norm got a batched tensor as input while the running_mean or running_var, which will be updated in place, ",
+                      "were not batched.\nIf you are using a module and do not need eval mode, please set `track_running_stats` to be False.",
+                      "If you are using a prebuilt module and do not need eval mode, please see the functorch website for resources on",
+                      "how to patch your module to work with vmap");
   }
   c10::optional<int64_t> bdim_size;
   Tensor result0;
