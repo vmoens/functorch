@@ -3558,6 +3558,8 @@ class TestVmapOperatorsOpInfo(TestCase):
         supported_ops = [
             lambda t, _: torch.randint_like(t, 20),
             lambda t, _: torch.randint_like(t, 0, 20),
+            lambda t, _: torch.rand_like(t),
+            lambda t, _: torch.randn_like(t),
             lambda t, _: torch.nn.functional.dropout(torch.ones_like(t), training=True),
             lambda t, _: torch.nn.functional.alpha_dropout(torch.ones_like(t), training=True),
             lambda t, _: torch.nn.functional.feature_alpha_dropout(t, training=True),
