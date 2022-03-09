@@ -68,7 +68,8 @@ class PythonTensor(torch.Tensor):
     __torch_function__ = _disabled_torch_function_impl
 
     @classmethod
-    def __torch_dispatch__(cls, func, types, args=(), kwargs=None):
+    def __torch_dispatch__(cls, func_overload, types, args=(), kwargs=None):
+        func = func_overload.overloadpacket
         if func in CURRENT_DECOMPOSITION_TABLE:
             return CURRENT_DECOMPOSITION_TABLE[func](*args, **kwargs)
         # Commenting this out for now since it causes some spurious failures (such as error checking)
@@ -89,7 +90,7 @@ class PythonTensor(torch.Tensor):
             args[0].proxy = proxy_out
 
         with no_dispatch():
-            real_out = func(*args, **kwargs)
+            real_out = func_overload(*args, **kwargs)
 
         def wrap_with_proxy(e, proxy):
             # Some ops (like native_batch_norm_backward) return undefined tensors that get
